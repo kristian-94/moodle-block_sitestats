@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_sitestats/main
+
+    Error to display when the rules page loads with errors.
+
+    Note that we did not translate these strings, and we applied only inline styling
+    because a) this should occur rarely enough that translations do not matter, b)
+    styling can be broken when the page fails to load, so enforcing them is best.
+
+    Lastly, we do not use the #js helper because the JavaScript needs to execute as
+    this renders and not on page load, so it must be inlined. The JavaScript will
+    check whether another expected part of the page was rendered (given a delay),
+    and if not it will display this error.
+
+    Example context (json):
+    {
+    }
+}}
+<div class="row">
+    <div class="col-md-4 text-center
+    "><i class="fa fa-users fa-2x"></i>
+        <h2>{{total_active_users}}</h2>
+        <p>Total Active Users</p></div>
+    <div class="col-md-4 text-center"><i class="fa fa-book fa-2x"></i>
+        <h2>{{number_of_courses}}</h2>
+        <p>Number of
+            Courses</p></div>
+    <div class="col-md-4 text-center"><i class="fa fa-check fa-2x"></i>
+        <h2>{{total_enrolments}}</h2>
+        <p>Total Enrolments</p>
+    </div>
+</div>
+
+<h5>Current top 3 courses</h5>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Course</th>
+        <th>Enrolments</th>
+    </tr>
+    </thead>
+    {{#top_courses}}
+        <tr>
+            <td><a class="" href='/course/view.php?id={{id}}'>{{fullname}}</a></td>
+            <td class="text-info">{{enrolments}}</td>
+        </tr>
+    {{/top_courses}}
+</table>

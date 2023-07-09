@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use block_sitestats\output\main;
+
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Form for editing HTML block instances.
  *
@@ -28,51 +32,25 @@ class block_sitestats extends block_base
         $this->title = get_string('pluginname', 'block_sitestats');
     }
 
-
-    function get_content()
+    public function hide_header()
     {
+        return true;
+    }
 
-        global $DB;
+    public function get_content()
+    {
         if ($this->content !== NULL) {
             return $this->content;
         }
 
         $this->content = new stdClass();
-
-        $this->content->text .= '<div id="sitestats"';
-        $this->content->text .= '<p>Total Active Users:</p>';
-
-        // Retrieve the total number of active users
-        $totalActiveUsers = $DB->count_records_sql("
-            SELECT COUNT(DISTINCT u.id)
-            FROM {user} u
-            INNER JOIN {user_lastaccess} ul ON u.id = ul.userid
-            WHERE u.deleted = 0 AND ul.timeaccess > :timeaccess
-        ", ['timeaccess' => time() - 60]);
-
-        $this->content->text .= '<p>' . $totalActiveUsers . '</p>';
-
-        $this->content->text .= '<p>Total Enrolments:</p>';
-
-        // Retrieve the total enrolments
-        $totalEnrolments = $DB->count_records('enrol');
-
-        $this->content->text .= '<p>' . $totalEnrolments . '</p>';
-
-        $this->content->text .= '<p>Number of Courses:</p>';
-
-        // Retrieve the number of courses
-        $numberOfCourses = $DB->count_records('course');
-
-        $this->content->text .= '<p>' . $numberOfCourses . '</p>';
-
-        $this->content->text .= '</div>';
-
-
         $this->content->footer = '';
+
+        $renderable = new main();
+        $renderer = $this->page->get_renderer('block_sitestats');
+        $this->content->text = $renderer->render($renderable);
+
         return $this->content;
-
-
     }
 }
 
