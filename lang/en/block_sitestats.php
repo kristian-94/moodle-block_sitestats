@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_testblock', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'block_sitestats', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package   block_html
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['html:addinstance'] = 'Add a new test block';
-$string['html:myaddinstance'] = 'Add a new test block to Dashboard';
-$string['testbblock'] = 'test block';
-$string['pluginname'] = 'Test block';
+$string['sitestats:addinstance'] = 'Add a site stats block';
+$string['sitestats:myaddinstance'] = 'Add a new site stats to Dashboard';
+$string['pluginname'] = 'Site statistics';

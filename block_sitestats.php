@@ -17,19 +17,20 @@
 /**
  * Form for editing HTML block instances.
  *
- * @package   block_testblock
+ * @package   block_sitestats
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class block_sitestats extends block_base
+{
 
-class block_testblock extends block_base {
-
-    function init() {
-        $this->title = get_string('pluginname', 'block_testblock');
+    function init()
+    {
+        $this->title = get_string('pluginname', 'block_sitestats');
     }
 
-   
 
-    function get_content() {
+    function get_content()
+    {
 
         global $DB;
         if ($this->content !== NULL) {
@@ -38,9 +39,9 @@ class block_testblock extends block_base {
 
         $this->content = new stdClass();
 
-        $this->content->text .= '<div id="testblock"';
+        $this->content->text .= '<div id="sitestats"';
         $this->content->text .= '<p>Total Active Users:</p>';
-    
+
         // Retrieve the total number of active users
         $totalActiveUsers = $DB->count_records_sql("
             SELECT COUNT(DISTINCT u.id)
@@ -48,31 +49,30 @@ class block_testblock extends block_base {
             INNER JOIN {user_lastaccess} ul ON u.id = ul.userid
             WHERE u.deleted = 0 AND ul.timeaccess > :timeaccess
         ", ['timeaccess' => time() - 60]);
-    
+
         $this->content->text .= '<p>' . $totalActiveUsers . '</p>';
-    
+
         $this->content->text .= '<p>Total Enrolments:</p>';
 
-    // Retrieve the total enrolments
+        // Retrieve the total enrolments
         $totalEnrolments = $DB->count_records('enrol');
 
         $this->content->text .= '<p>' . $totalEnrolments . '</p>';
 
         $this->content->text .= '<p>Number of Courses:</p>';
 
-    // Retrieve the number of courses
-    $numberOfCourses = $DB->count_records('course');
+        // Retrieve the number of courses
+        $numberOfCourses = $DB->count_records('course');
 
-    $this->content->text .= '<p>' . $numberOfCourses . '</p>';
+        $this->content->text .= '<p>' . $numberOfCourses . '</p>';
 
-    $this->content->text .= '</div>';
+        $this->content->text .= '</div>';
 
 
         $this->content->footer = '';
         return $this->content;
 
-        
-    
+
     }
 }
 
