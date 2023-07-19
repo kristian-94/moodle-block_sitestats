@@ -49,20 +49,30 @@ class main implements renderable, templatable
     public function export_for_template(renderer_base $output)
     {
         global $DB;
+        $categories = get_config('block_sitestats', 'categorychoices');
 
         $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments
         FROM {course} c
         LEFT JOIN {enrol} en ON en.courseid = c.id
-        LEFT JOIN {user_enrolments} e ON e.enrolid = en.id
-        GROUP BY c.id, c.fullname
+        LEFT JOIN {user_enrolments} e ON e.enrolid = en.id ";
+
+        if ($categories) {
+            $sql .= " WHERE c.category IN ($categories) ";
+        }
+
+        $sql .= " GROUP BY c.id, c.fullname
         ORDER BY enrolments DESC
         LIMIT 3";
 
         $topcourses = $DB->get_records_sql($sql);
-        $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0");
+        $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0 AND u.username NOT LIKE 'tool_generator%'");
 
         $totalEnrolments = $DB->count_records('user_enrolments', ['status' => status_field::STATUS_ACTIVE]);
-        $numberOfCourses = $DB->count_records('course');
+        $sql = "SELECT COUNT(c.id) FROM {course} c WHERE c.visible = 1";
+        if ($categories) {
+            $sql .= " AND c.category IN ($categories) ";
+        }
+        $numberOfCourses = $DB->count_records_sql($sql);
 
         return [
             'top_courses' => array_values($topcourses),

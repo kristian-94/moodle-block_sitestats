@@ -14,15 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Strings for component 'block_sitestats', language 'en', branch 'MOODLE_20_STABLE'
- *
- * @package   block_html
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+defined('MOODLE_INTERNAL') || die;
 
-$string['sitestats:addinstance'] = 'Add a site stats block';
-$string['sitestats:myaddinstance'] = 'Add a new site stats to Dashboard';
-$string['pluginname'] = 'Site statistics';
-$string['categorychoice'] = 'Category choice';
-$string['categorychoice_desc'] = 'Choose the categories you want to display in the block';
+if ($ADMIN->fulltree) {
+
+    global $DB;
+    $categories = $DB->get_records('course_categories', null, 'sortorder ASC', 'id, name');
+
+    $options = [];
+    foreach ($categories as $category) {
+        $options[$category->id] = $category->name;
+    }
+
+    $settings->add(new admin_setting_configmulticheckbox('block_sitestats/categorychoices',
+            new lang_string('categorychoice', 'block_sitestats'),
+            new lang_string('categorychoice_desc', 'block_sitestats'), null, $options)
+    );
+}
