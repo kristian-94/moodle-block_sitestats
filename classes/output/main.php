@@ -74,11 +74,14 @@ class main implements renderable, templatable
         }
         $numberOfCourses = $DB->count_records_sql($sql);
 
+        $totalCompletions = $DB->count_records_select('course_completions', 'timecompleted > 0');
+
         return [
             'top_courses' => array_values($topcourses),
             'total_active_users' => $totalActiveUsers,
             'number_of_courses' => $numberOfCourses,
             'total_enrolments' => $totalEnrolments,
+            'total_completions' => $totalCompletions,
         ];
     }
 }
