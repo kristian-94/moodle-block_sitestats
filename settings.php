@@ -26,6 +26,11 @@ if ($ADMIN->fulltree) {
         $options[$category->id] = $category->name;
     }
 
+    $settings->add(new admin_setting_configtext('block_sitestats/topcourseslimit',
+            new lang_string('topcourseslimit', 'block_sitestats'),
+            new lang_string('topcourseslimit_desc', 'block_sitestats'), 3, PARAM_INT)
+    );
+
     $settings->add(new admin_setting_configmulticheckbox('block_sitestats/categorychoices',
             new lang_string('categorychoice', 'block_sitestats'),
             new lang_string('categorychoice_desc', 'block_sitestats'), null, $options)

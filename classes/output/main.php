@@ -60,9 +60,11 @@ class main implements renderable, templatable
             $sql .= " WHERE c.category IN ($categories) ";
         }
 
+        $topcourseslimit = (int)get_config('block_sitestats', 'topcourseslimit');
+
         $sql .= " GROUP BY c.id, c.fullname
         ORDER BY enrolments DESC
-        LIMIT 3";
+        LIMIT " . $topcourseslimit;
 
         $topcourses = $DB->get_records_sql($sql);
         $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0 AND u.username NOT LIKE 'tool_generator%'");
@@ -78,6 +80,7 @@ class main implements renderable, templatable
 
         return [
             'top_courses' => array_values($topcourses),
+            'topcourseslimit' => $topcourseslimit,
             'total_active_users' => $totalActiveUsers,
             'number_of_courses' => $numberOfCourses,
             'total_enrolments' => $totalEnrolments,

@@ -26,3 +26,5 @@ $string['sitestats:myaddinstance'] = 'Add a new site stats to Dashboard';
 $string['pluginname'] = 'Site statistics';
 $string['categorychoice'] = 'Category choice';
 $string['categorychoice_desc'] = 'Choose the categories you want to display in the block';
+$string['topcourseslimit'] = 'Top courses limit';
+$string['topcourseslimit_desc'] = 'Number of top courses to display in the block';
