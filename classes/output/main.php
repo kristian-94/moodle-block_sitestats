@@ -25,6 +25,7 @@ namespace block_sitestats\output;
 defined('MOODLE_INTERNAL') || die();
 
 use core_user\output\status_field;
+use moodle_url;
 use renderable;
 use renderer_base;
 use templatable;
@@ -48,7 +49,7 @@ class main implements renderable, templatable
      */
     public function export_for_template(renderer_base $output)
     {
-        global $DB;
+        global $DB, $USER;
         $categories = get_config('block_sitestats', 'categorychoices');
 
         $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments
@@ -57,10 +58,25 @@ class main implements renderable, templatable
         LEFT JOIN {user_enrolments} e ON e.enrolid = en.id ";
 
         if ($categories) {
-            $sql .= " WHERE c.category IN ($categories) ";
+            $sql .= " WHERE c.category IN ($categories) AND c.visible = 1";
         }
 
         $topcourseslimit = (int)get_config('block_sitestats', 'topcourseslimit');
+
+        $newcoursessql = "SELECT c.id, c.fullname, c.timecreated, COUNT(e.userid) AS enrolments,
+    MAX(CASE WHEN e.userid = :userid THEN 1 ELSE 0 END) AS is_enrolled
+    FROM {course} c
+    LEFT JOIN {enrol} en ON en.courseid = c.id
+    LEFT JOIN {user_enrolments} e ON e.enrolid = en.id
+    WHERE c.visible = 1 
+    GROUP BY c.id, c.fullname, c.timecreated
+    ORDER BY c.timecreated DESC LIMIT " . $topcourseslimit;
+
+        $newcourses = $DB->get_records_sql($newcoursessql, ['userid' => $USER->id]);
+
+        foreach ($newcourses as $course) {
+            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-agenda/index.html?lms_id=' . $course->id;
+        }
 
         $sql .= " GROUP BY c.id, c.fullname
         ORDER BY enrolments DESC
@@ -80,6 +96,7 @@ class main implements renderable, templatable
 
         return [
             'top_courses' => array_values($topcourses),
+            'new_courses' => array_values($newcourses),
             'topcourseslimit' => $topcourseslimit,
             'total_active_users' => $totalActiveUsers,
             'number_of_courses' => $numberOfCourses,

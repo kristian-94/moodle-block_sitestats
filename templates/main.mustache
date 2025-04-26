@@ -72,3 +72,21 @@
         </tr>
     {{/top_courses}}
 </table>
+
+<hr>
+<h5>{{topcourseslimit}} most recently added courses</h5>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Course</th>
+        <th>Enrollments</th>
+    </tr>
+    </thead>
+    {{#new_courses}}
+        <tr>
+            <td><a href="{{link}}">{{fullname}}</a></td>
+            <td>{{enrolments}}</td>
+        </tr>
+    {{/new_courses}}
+</table>
