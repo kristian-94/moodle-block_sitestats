@@ -52,15 +52,6 @@ class main implements renderable, templatable
         global $DB, $USER;
         $categories = get_config('block_sitestats', 'categorychoices');
 
-        $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments
-        FROM {course} c
-        LEFT JOIN {enrol} en ON en.courseid = c.id
-        LEFT JOIN {user_enrolments} e ON e.enrolid = en.id ";
-
-        if ($categories) {
-            $sql .= " WHERE c.category IN ($categories) AND c.visible = 1";
-        }
-
         $topcourseslimit = (int)get_config('block_sitestats', 'topcourseslimit');
 
         $newcoursessql = "SELECT c.id, c.fullname, c.timecreated, COUNT(e.userid) AS enrolments,
@@ -75,14 +66,27 @@ class main implements renderable, templatable
         $newcourses = $DB->get_records_sql($newcoursessql, ['userid' => $USER->id]);
 
         foreach ($newcourses as $course) {
-            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-agenda/index.html?lms_id=' . $course->id;
+            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?lms_id=' . $course->id;
         }
 
-        $sql .= " GROUP BY c.id, c.fullname
+        $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments,
+        MAX(CASE WHEN e.userid = :userid THEN 1 ELSE 0 END) AS is_enrolled
+        FROM {course} c
+        LEFT JOIN {enrol} en ON en.courseid = c.id
+        LEFT JOIN {user_enrolments} e ON e.enrolid = en.id ";
+
+        if ($categories) {
+            $sql .= " WHERE c.category IN ($categories) AND c.visible = 1";
+        }
+        $sql .= " GROUP BY c.id, c.fullname, c.timecreated
         ORDER BY enrolments DESC
         LIMIT " . $topcourseslimit;
 
-        $topcourses = $DB->get_records_sql($sql);
+        $topcourses = $DB->get_records_sql($sql, ['userid' => $USER->id]);
+        foreach ($topcourses as $course) {
+            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?lms_id=' . $course->id;
+        }
+
         $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0 AND u.username NOT LIKE 'tool_generator%'");
 
         $totalEnrolments = $DB->count_records('user_enrolments', ['status' => status_field::STATUS_ACTIVE]);
