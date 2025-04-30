@@ -66,7 +66,7 @@ class main implements renderable, templatable
         $newcourses = $DB->get_records_sql($newcoursessql, ['userid' => $USER->id]);
 
         foreach ($newcourses as $course) {
-            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?lms_id=' . $course->id;
+            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
         }
 
         $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments,
@@ -84,7 +84,7 @@ class main implements renderable, templatable
 
         $topcourses = $DB->get_records_sql($sql, ['userid' => $USER->id]);
         foreach ($topcourses as $course) {
-            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?lms_id=' . $course->id;
+            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
         }
 
         $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0 AND u.username NOT LIKE 'tool_generator%'");
