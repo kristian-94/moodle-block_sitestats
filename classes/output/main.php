@@ -55,9 +55,11 @@ class main implements renderable, templatable
         $topcourseslimit = (int)get_config('block_sitestats', 'topcourseslimit');
 
         $newcoursessql = "SELECT c.id, c.fullname, c.timecreated, COUNT(e.userid) AS enrolments,
+        cc.name AS category,
     MAX(CASE WHEN e.userid = :userid THEN 1 ELSE 0 END) AS is_enrolled
     FROM {course} c
     LEFT JOIN {enrol} en ON en.courseid = c.id
+    JOIN {course_categories} cc ON cc.id = c.category
     LEFT JOIN {user_enrolments} e ON e.enrolid = en.id
     WHERE c.visible = 1 
     GROUP BY c.id, c.fullname, c.timecreated
@@ -67,16 +69,19 @@ class main implements renderable, templatable
 
         foreach ($newcourses as $course) {
             $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
+            $course->track = $course->category;
         }
 
         $sql = "SELECT c.id, c.fullname, COUNT(e.userid) AS enrolments,
+        cc.name AS category,
         MAX(CASE WHEN e.userid = :userid THEN 1 ELSE 0 END) AS is_enrolled
         FROM {course} c
         LEFT JOIN {enrol} en ON en.courseid = c.id
+        JOIN {course_categories} cc ON cc.id = c.category
         LEFT JOIN {user_enrolments} e ON e.enrolid = en.id ";
 
         if ($categories) {
-            $sql .= " WHERE c.category IN ($categories) AND c.visible = 1";
+            $sql .= " WHERE c.visible = 1 AND c.fullname NOT LIKE 'Test course%'";
         }
         $sql .= " GROUP BY c.id, c.fullname, c.timecreated
         ORDER BY enrolments DESC
@@ -85,6 +90,7 @@ class main implements renderable, templatable
         $topcourses = $DB->get_records_sql($sql, ['userid' => $USER->id]);
         foreach ($topcourses as $course) {
             $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
+            $course->track = $course->category;
         }
 
         $totalActiveUsers = $DB->count_records_sql(" SELECT COUNT(DISTINCT u.id) FROM {user} u WHERE u.deleted = 0 AND u.username NOT LIKE 'tool_generator%'");

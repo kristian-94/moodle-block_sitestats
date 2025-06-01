@@ -62,12 +62,14 @@
     <thead>
     <tr>
         <th>Course</th>
+        <th>Track</th>
         <th>Enrollments</th>
     </tr>
     </thead>
     {{#top_courses}}
         <tr>
             <td><a href="{{link}}">{{fullname}}</a></td>
+            <td>{{track}}</td>
             <td>{{enrolments}}</td>
         </tr>
     {{/top_courses}}
@@ -80,12 +82,14 @@
     <thead>
     <tr>
         <th>Course</th>
+        <th>Track</th>
         <th>Enrollments</th>
     </tr>
     </thead>
     {{#new_courses}}
         <tr>
             <td><a href="{{link}}">{{fullname}}</a></td>
+            <td>{{track}}</td>
             <td>{{enrolments}}</td>
         </tr>
     {{/new_courses}}
