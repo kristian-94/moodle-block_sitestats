@@ -54,7 +54,7 @@ class main implements renderable, templatable
 
         $topcourseslimit = (int)get_config('block_sitestats', 'topcourseslimit');
 
-        $newcoursessql = "SELECT c.id, c.fullname, c.timecreated, COUNT(e.userid) AS enrolments,
+        $newcoursessql = "SELECT c.id, c.fullname, c.timecreated, COUNT(DISTINCT e.userid) AS enrolments,
         cc.name AS category,
     MAX(CASE WHEN e.userid = :userid THEN 1 ELSE 0 END) AS is_enrolled
     FROM {course} c
@@ -62,7 +62,7 @@ class main implements renderable, templatable
     JOIN {course_categories} cc ON cc.id = c.category
     LEFT JOIN {user_enrolments} e ON e.enrolid = en.id
     WHERE c.visible = 1 
-    GROUP BY c.id, c.fullname, c.timecreated
+    GROUP BY c.id, c.fullname, c.timecreated, cc.name
     ORDER BY c.timecreated DESC LIMIT " . $topcourseslimit;
 
         $newcourses = $DB->get_records_sql($newcoursessql, ['userid' => $USER->id]);
@@ -83,7 +83,7 @@ class main implements renderable, templatable
         if ($categories) {
             $sql .= " WHERE c.visible = 1 AND c.fullname NOT LIKE 'Test course%'";
         }
-        $sql .= " GROUP BY c.id, c.fullname, c.timecreated
+        $sql .= " GROUP BY c.id, c.fullname, c.timecreated, cc.name
         ORDER BY enrolments DESC
         LIMIT " . $topcourseslimit;
 
