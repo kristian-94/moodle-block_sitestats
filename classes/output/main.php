@@ -68,7 +68,9 @@ class main implements renderable, templatable
         $newcourses = $DB->get_records_sql($newcoursessql, ['userid' => $USER->id]);
 
         foreach ($newcourses as $course) {
-            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
+            $context = \context_course::instance($course->id);
+            $can_view_course = has_capability('moodle/course:view', $context) || $course->is_enrolled;
+            $course->link = $can_view_course ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
             $course->track = $course->category;
         }
 
@@ -89,7 +91,9 @@ class main implements renderable, templatable
 
         $topcourses = $DB->get_records_sql($sql, ['userid' => $USER->id]);
         foreach ($topcourses as $course) {
-            $course->link = $course->is_enrolled ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
+            $context = \context_course::instance($course->id);
+            $can_view_course = has_capability('moodle/course:view', $context) || $course->is_enrolled;
+            $course->link = $can_view_course ? ((new moodle_url('/course/view.php', ['id' => $course->id]))->out(false)): 'https://calcupa.org/lms-course/index.html?moodle_course_id=' . $course->id;
             $course->track = $course->category;
         }
 
