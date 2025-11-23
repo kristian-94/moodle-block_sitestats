@@ -15,15 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Block sitestats external services
  *
- * @package    block_sitestats
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_sitestats
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace block_sitestats\external;
 
-$plugin->version   = 2025112300;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;        // Requires this Moodle version.
-$plugin->component = 'block_sitestats';      // Full name of the plugin (used for diagnostics)
+defined('MOODLE_INTERNAL') || die;
+
+require_once($CFG->libdir . "/externallib.php");
+
+use external_api;
+
+/**
+ * Uses all moodle webservices trait defined in external folder
+ *
+ * @package   block_sitestats
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class api extends external_api {
+    use get_site_stats;
+}
