@@ -17,80 +17,76 @@
 {{!
     @template block_sitestats/main
 
-    Error to display when the rules page loads with errors.
-
-    Note that we did not translate these strings, and we applied only inline styling
-    because a) this should occur rarely enough that translations do not matter, b)
-    styling can be broken when the page fails to load, so enforcing them is best.
-
-    Lastly, we do not use the #js helper because the JavaScript needs to execute as
-    this renders and not on page load, so it must be inlined. The JavaScript will
-    check whether another expected part of the page was rendered (given a delay),
-    and if not it will display this error.
+    Site statistics: four stat tiles, then the top courses and the most recently added
+    courses as two lists. Layout only; colours and fonts come from the theme.
 
     Example context (json):
     {
+        "total_active_users": 1294,
+        "number_of_courses": 105,
+        "total_enrolments": 7261,
+        "total_completions": 4460,
+        "topcourseslimit": 10,
+        "top_courses": [{"link": "#", "fullname": "HAZARDOUS WASTE 101", "track": "B - Hazardous Waste", "enrolments": 210}],
+        "new_courses": [{"link": "#", "fullname": "UST LEAK PREVENTION UPDATE 2026", "track": "C - Underground Storage Tanks", "enrolments": 9}]
     }
 }}
-<div class="row">
-    <div class="col-md-3 text-center">
-        <i class="fa fa-users fa-2x"></i>
-        <h2>{{total_active_users}}</h2>
-        <p>Total Active Users</p>
+<div class="sitestats">
+    <div class="sitestats-tiles">
+        <div class="sitestats-tile card">
+            <i class="fa fa-users" aria-hidden="true"></i>
+            <strong>{{total_active_users}}</strong>
+            <span>Total Active Users</span>
+        </div>
+        <div class="sitestats-tile card">
+            <i class="fa fa-book" aria-hidden="true"></i>
+            <strong>{{number_of_courses}}</strong>
+            <span>Number of Courses</span>
+        </div>
+        <div class="sitestats-tile card">
+            <i class="fa fa-user-plus" aria-hidden="true"></i>
+            <strong>{{total_enrolments}}</strong>
+            <span>Total Enrollments</span>
+        </div>
+        <div class="sitestats-tile card">
+            <i class="fa fa-award" aria-hidden="true"></i>
+            <strong>{{total_completions}}</strong>
+            <span>Total Completions</span>
+        </div>
     </div>
-    <div class="col-md-3 text-center">
-        <i class="fa fa-book fa-2x"></i>
-        <h2>{{number_of_courses}}</h2>
-        <p>Number of
-            Courses</p>
-    </div>
-    <div class="col-md-3 text-center">
-        <i class="fa fa-user-plus fa-2x"></i>
-        <h2>{{total_enrolments}}</h2>
-        <p>Total Enrollments</p>
-    </div>
-    <div class="col-md-3 text-center">
-        <i class="fa fa-award fa-2x"></i>
-        <h2>{{total_completions}}</h2>
-        <p>Total Completions</p>
+
+    <div class="sitestats-panels">
+        <div class="sitestats-panel card">
+            <div class="sitestats-panel-header card-header"><h5>Current top {{topcourseslimit}} courses</h5></div>
+            <ul class="sitestats-list">
+                {{#top_courses}}
+                <li>
+                    <a class="sitestats-link" href="{{link}}">
+                        <span class="sitestats-icon" aria-hidden="true"><i class="fa fa-trophy"></i></span>
+                        <span class="sitestats-text">
+                            <strong>{{fullname}}</strong>
+                            <small>{{track}} · {{enrolments}} enrollments</small>
+                        </span>
+                    </a>
+                </li>
+                {{/top_courses}}
+            </ul>
+        </div>
+        <div class="sitestats-panel card">
+            <div class="sitestats-panel-header card-header"><h5>{{topcourseslimit}} most recently added courses</h5></div>
+            <ul class="sitestats-list">
+                {{#new_courses}}
+                <li>
+                    <a class="sitestats-link" href="{{link}}">
+                        <span class="sitestats-icon sitestats-icon-new" aria-hidden="true">NEW</span>
+                        <span class="sitestats-text">
+                            <strong>{{fullname}}</strong>
+                            <small>{{track}} · {{enrolments}} enrollments</small>
+                        </span>
+                    </a>
+                </li>
+                {{/new_courses}}
+            </ul>
+        </div>
     </div>
 </div>
-
-<h5>Current top {{topcourseslimit}} courses</h5>
-
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th style="width: 70%;">Course</th>
-        <th style="width: 25%;">Track</th>
-        <th style="width: 5%;">Enrollments</th>
-    </tr>
-    </thead>
-    {{#top_courses}}
-        <tr>
-            <td><a href="{{link}}">{{fullname}}</a></td>
-            <td>{{track}}</td>
-            <td>{{enrolments}}</td>
-        </tr>
-    {{/top_courses}}
-</table>
-
-<hr>
-<h5>{{topcourseslimit}} most recently added courses</h5>
-
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th style="width: 70%;">Course</th>
-        <th style="width: 25%;">Track</th>
-        <th style="width: 5%;">Enrollments</th>
-    </tr>
-    </thead>
-    {{#new_courses}}
-        <tr>
-            <td><a href="{{link}}">{{fullname}}</a></td>
-            <td>{{track}}</td>
-            <td>{{enrolments}}</td>
-        </tr>
-    {{/new_courses}}
-</table>
